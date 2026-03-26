@@ -15,8 +15,8 @@ frappe.query_reports["Sage Financial Statement"] = {
 			fieldname: "filter_based_on",
 			label: __("Filter Based On"),
 			fieldtype: "Select",
-			options: ["Fiscal Year", "Date Range"],
-			default: ["Fiscal Year"],
+			options: ["Date Range"],
+			default: ["Date Range"],
 			reqd: 1,
 			on_change: function () {
 				let filter_based_on = frappe.query_report.get_filter_value("filter_based_on");
@@ -27,11 +27,11 @@ frappe.query_reports["Sage Financial Statement"] = {
 				frappe.query_report.toggle_filter_display("to_fiscal_year", filter_based_on === "Date Range");
 				frappe.query_report.toggle_filter_display(
 					"period_start_date",
-					filter_based_on === "Fiscal Year"
+					filter_based_on === "Date Range"
 				);
 				frappe.query_report.toggle_filter_display(
 					"period_end_date",
-					filter_based_on === "Fiscal Year"
+					filter_based_on === "Date Range"
 				);
 
 				frappe.query_report.refresh();
@@ -41,14 +41,14 @@ frappe.query_reports["Sage Financial Statement"] = {
 			fieldname: "period_start_date",
 			label: __("Start Date"),
 			fieldtype: "Date",
-			hidden: 1,
+			// hidden: 1,
 			reqd: 1,
 		},
 		{
 			fieldname: "period_end_date",
 			label: __("End Date"),
 			fieldtype: "Date",
-			hidden: 1,
+			// hidden: 1,
 			reqd: 1,
 		},
 		{
@@ -109,8 +109,8 @@ frappe.query_reports["Sage Financial Statement"] = {
 			fieldname: "report",
 			label: __("Report"),
 			fieldtype: "Select",
-			options: ["Profit and Loss Statement", "Balance Sheet", "Cash Flow"],
-			default: "Balance Sheet",
+			options: ["Profit and Loss Statement"],
+			default: "Profit and Loss Statement",
 			reqd: 1,
 		},
 		{
@@ -171,5 +171,20 @@ frappe.query_reports["Sage Financial Statement"] = {
 				period_end_date: fy.year_end_date,
 			});
 		});
+
+		frappe.query_report.page.add_inner_button(__("Export to Excel"), function () {
+			let filters = frappe.query_report.get_filter_values();
+			frappe.call({
+				method: "mesk_sageerp.mesk_sageerp.report.sage_financial_statement.sage_financial_statement.export_to_excel",
+				args: { filters: filters },
+				freeze: true,
+				freeze_message: __("Exporting to Excel..."),
+				callback: function (r) {
+					if (r.message) {
+						frappe.msgprint(__("Excel file saved to: {0}", [r.message]));
+					}
+				},
+			});
+		}).addClass("btn-primary");
 	},
 };

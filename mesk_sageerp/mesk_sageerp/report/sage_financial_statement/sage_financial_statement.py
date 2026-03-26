@@ -71,9 +71,9 @@ def execute(filters=None):
 		{	**item, 
 			"indent": 0.0,
 			"customer_id": srs.get("customer_id"),
-			"invoice_cm": str(srs.invoice_prefix)+'-'+str(format_date(today())).replace("-", ""),
+			"invoice_cm": str(srs.invoice_prefix)+'-'+str(format_date(filters.period_start_date)).replace("-", ""),
 			"credit_memo": srs.get("credit_memo"),
-			"today_date":format_date(today()),
+			"today_date":format_date(filters.period_start_date),
 			"accounts_receivable_account": srs.get("accounts_receivable_account"),
 			"accounts_receivable_amount": srs.get("accounts_receivable_amount"),
 			"tax_type": srs.get("tax_type"),
@@ -865,3 +865,40 @@ def filter_accounts(accounts, depth=10):
 	add_to_list(None, 0)
 
 	return filtered_accounts, accounts_by_name, parent_children_map
+
+
+@frappe.whitelist()
+def export_to_excel(filters):
+	import json
+	import os
+
+	from frappe.utils.xlsxutils import make_xlsx
+	
+	srs = frappe.get_single("Sage Report Setting")
+	if not srs.enable_auto_creation_of_sfsr:
+		return
+	
+	if isinstance(filters, str):
+		filters = json.loads(filters)
+	filters = frappe._dict(filters)
+	columns, data, *_ = execute(filters)
+
+	header = [col.get("label") for col in columns]
+	rows = []
+	for row in data:
+		rows.append([row.get(col.get("fieldname"), "") for col in columns])
+
+	xlsx_data = [header] + rows
+	xlsx_file = make_xlsx(xlsx_data, "Sage Financial Statement")
+
+	desktop_path = os.path.expanduser(srs.folder_to_download_sfsr)
+	os.makedirs(desktop_path, exist_ok=True)
+
+	report_type = filters.get("report", "Report").replace(" ", "_")
+	filename = f"{frappe.utils.now()}_SFSR.xlsx"
+	filepath = os.path.join(desktop_path, filename)
+
+	with open(filepath, "wb") as f:
+		f.write(xlsx_file.getvalue())
+
+	return filepath

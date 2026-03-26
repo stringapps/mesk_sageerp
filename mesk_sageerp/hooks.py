@@ -142,24 +142,13 @@ app_license = "mit"
 
 # Scheduled Tasks
 # ---------------
-
-# scheduler_events = {
-# 	"all": [
-# 		"mesk_sageerp.tasks.all"
-# 	],
-# 	"daily": [
-# 		"mesk_sageerp.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"mesk_sageerp.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"mesk_sageerp.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"mesk_sageerp.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"cron": {
+		"0 10 * * *": [
+			"mesk_sageerp.mesk_sageerp.tasks.daily_export_sage_financial_statement"
+		]
+	},
+}
 
 # Testing
 # -------
