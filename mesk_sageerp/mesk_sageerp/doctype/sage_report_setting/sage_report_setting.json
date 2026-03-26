@@ -1,0 +1,119 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-26 11:09:05.187903",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sage_financial_statement_report_tab",
+  "sage_financial_statement_report_section",
+  "customer_id",
+  "credit_memo",
+  "column_break_play",
+  "accounts_receivable_account",
+  "accounts_receivable_amount",
+  "column_break_ydmk",
+  "invoice_prefix",
+  "tax_type",
+  "section_break_vcxv",
+  "accounts",
+  "tab_break_bwzi",
+  "enable"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_id",
+   "fieldtype": "Data",
+   "label": "Customer ID"
+  },
+  {
+   "fieldname": "credit_memo",
+   "fieldtype": "Data",
+   "label": "Credit Memo"
+  },
+  {
+   "fieldname": "accounts_receivable_account",
+   "fieldtype": "Data",
+   "label": "Accounts Receivable Account"
+  },
+  {
+   "fieldname": "accounts_receivable_amount",
+   "fieldtype": "Data",
+   "label": "Accounts Receivable Amount"
+  },
+  {
+   "fieldname": "tax_type",
+   "fieldtype": "Data",
+   "label": "Tax Type"
+  },
+  {
+   "fieldname": "sage_financial_statement_report_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sage_financial_statement_report_tab",
+   "fieldtype": "Tab Break",
+   "label": "Sage Financial Statement Report"
+  },
+  {
+   "fieldname": "tab_break_bwzi",
+   "fieldtype": "Tab Break",
+   "label": "Sage GL Report"
+  },
+  {
+   "fieldname": "column_break_play",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ydmk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_vcxv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "accounts",
+   "fieldtype": "Table",
+   "label": "Accounts",
+   "options": "Sage FSR Accounts"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable",
+   "fieldtype": "Check",
+   "label": "Enable"
+  },
+  {
+   "fieldname": "invoice_prefix",
+   "fieldtype": "Data",
+   "label": "Invoice Prefix"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-03-26 13:17:25.937132",
+ "modified_by": "Administrator",
+ "module": "Mesk Sageerp",
+ "name": "Sage Report Setting",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
