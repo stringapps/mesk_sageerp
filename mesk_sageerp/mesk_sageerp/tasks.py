@@ -23,17 +23,15 @@ def daily_export_sage_financial_statement():
 	os.makedirs(desktop_path, exist_ok=True)
 
 	try:
-		period_start_date = add_days(today(), -1)
-		period_end_date = add_days(today(), -1)
-
+		period_start_end_date = add_days(today(), -1)
 		from_fiscal_year = frappe.db.get_value(
 			"Fiscal Year",
-			{"year_start_date": ("<=", getdate(period_start_date)), "year_end_date": (">=", getdate(period_start_date))},
+			{"year_start_date": ("<=", getdate(period_start_end_date)), "year_end_date": (">=", getdate(period_start_end_date))},
 			"name",
 		)
 		to_fiscal_year = frappe.db.get_value(
 			"Fiscal Year",
-			{"year_start_date": ("<=", getdate(period_end_date)), "year_end_date": (">=", getdate(period_end_date))},
+			{"year_start_date": ("<=", getdate(period_start_end_date)), "year_end_date": (">=", getdate(period_start_end_date))},
 			"name",
 		)
 
@@ -41,8 +39,8 @@ def daily_export_sage_financial_statement():
 			{
 				"company": company,
 				"filter_based_on": "Date Range",
-				"period_start_date": period_start_date,
-				"period_end_date": period_end_date,
+				"period_start_date": period_start_end_date,
+				"period_end_date": period_start_end_date,
 				'presentation_currency': 'INR',
 				"report": "Profit and Loss Statement",
 				"include_default_book_entries": 1,
@@ -61,7 +59,7 @@ def daily_export_sage_financial_statement():
 		xlsx_data = [header] + rows
 		xlsx_file = make_xlsx(xlsx_data, "Sage Financial Statement")
 
-		filename = f"{frappe.utils.now()}_SFSR.xlsx"
+		filename = f"{period_start_end_date} {frappe.utils.nowtime()}_SFSR.xlsx"
 		filepath = os.path.join(desktop_path, filename)
 
 		with open(filepath, "wb") as f:
