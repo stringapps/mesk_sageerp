@@ -35,7 +35,6 @@ def execute(filters=None):
 	validate_filters(filters)
 	data = get_data(filters)
 	columns = get_columns()
-
 	srs = frappe.get_single("Sage Report Setting")
 	acc = [ d.account for d in srs.accounts ]
 	filtered_accounts = [
@@ -65,7 +64,6 @@ def execute(filters=None):
 				}
 				for item in filtered_accounts
 			]
-	print(data)
 	return columns, data
 
 
@@ -559,47 +557,10 @@ def get_columns():
 			"width": 120,
 		},
 		{
-			"fieldname": "ccount",
-			"label": _("Account"),
-			"fieldtype": "Link",
-			"options": "Account",
-			"width": 120,
-			"hidden": 1,
-		},
-		{
 			"fieldname": "tax_type",
 			"fieldtype": "Data",
 			"label": "Tax Type"
 		},
-		
-		{
-			"fieldname": "acc_number",
-			"label": _("Account Number"),
-			"fieldtype": "Data",
-			"hidden": 1,
-			"width": 120,
-		},
-		{
-			"fieldname": "currency",
-			"label": _("Currency"),
-			"fieldtype": "Link",
-			"options": "Currency",
-			"hidden": 1,
-		},
-		# {
-		# 	"fieldname": "opening_debit",
-		# 	"label": _("Opening (Dr)"),
-		# 	"fieldtype": "Currency",
-		# 	"options": "currency",
-		# 	"width": 120,
-		# },
-		# {
-		# 	"fieldname": "opening_credit",
-		# 	"label": _("Opening (Cr)"),
-		# 	"fieldtype": "Currency",
-		# 	"options": "currency",
-		# 	"width": 120,
-		# },
 		{
 			"fieldname": "net_amount",
 			"label": _("Amount"),
@@ -607,34 +568,6 @@ def get_columns():
 			"options": "currency",
 			"width": 120,
 		},
-		# {
-		# 	"fieldname": "debit",
-		# 	"label": _("Debit"),
-		# 	"fieldtype": "Currency",
-		# 	"options": "currency",
-		# 	"width": 120,
-		# },
-		# {
-		# 	"fieldname": "credit",
-		# 	"label": _("Credit"),
-		# 	"fieldtype": "Currency",
-		# 	"options": "currency",
-		# 	"width": 120,
-		# },
-		# {
-		# 	"fieldname": "closing_debit",
-		# 	"label": _("Closing (Dr)"),
-		# 	"fieldtype": "Currency",
-		# 	"options": "currency",
-		# 	"width": 120,
-		# },
-		# {
-		# 	"fieldname": "closing_credit",
-		# 	"label": _("Closing (Cr)"),
-		# 	"fieldtype": "Currency",
-		# 	"options": "currency",
-		# 	"width": 120,
-		# },
 	]
 
 
@@ -660,3 +593,39 @@ def hide_group_accounts(data):
 			d.update(indent=0)
 			non_group_accounts_data.append(d)
 	return non_group_accounts_data
+
+@frappe.whitelist()
+def export_to_excel(filters):
+	import json
+	import os
+
+	from frappe.utils.xlsxutils import make_xlsx
+	
+	srs = frappe.get_single("Sage Report Setting")
+	if not srs.enable_auto_creation_of_sfsr:
+		return
+	
+	if isinstance(filters, str):
+		filters = json.loads(filters)
+	filters = frappe._dict(filters)
+	columns, data, *_ = execute(filters)
+
+	header = [col.get("label") for col in columns]
+	rows = []
+	for row in data:
+		rows.append([row.get(col.get("fieldname"), "") for col in columns])
+
+	xlsx_data = [header] + rows
+	xlsx_file = make_xlsx(xlsx_data, "Sage Trial Balance")
+
+	desktop_path = os.path.expanduser(srs.folder_to_download_sfsr)
+	os.makedirs(desktop_path, exist_ok=True)
+
+	report_type = filters.get("report", "Report").replace(" ", "_")
+	filename = f"{filters.from_date}_STBR.xlsx"
+	filepath = os.path.join(desktop_path, filename)
+
+	with open(filepath, "wb") as f:
+		f.write(xlsx_file.getvalue())
+
+	return filepath

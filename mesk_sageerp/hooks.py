@@ -146,6 +146,7 @@ scheduler_events = {
 	"cron": {
 		"0 10 * * *": [
 			# "mesk_sageerp.mesk_sageerp.tasks.daily_export_sage_financial_statement"
+			"mesk_sageerp.mesk_sageerp.tasks.daily_export_sage_trial_balance"
 		]
 	},
 }
