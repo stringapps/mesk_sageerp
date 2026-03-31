@@ -895,7 +895,7 @@ def export_to_excel(filters):
 	os.makedirs(desktop_path, exist_ok=True)
 
 	report_type = filters.get("report", "Report").replace(" ", "_")
-	filename = f"{filters.period_start_date} {frappe.utils.nowtime()}_SFSR.xlsx"
+	filename = f"{filters.period_start_date}_SFSR.xlsx"
 	filepath = os.path.join(desktop_path, filename)
 
 	with open(filepath, "wb") as f:

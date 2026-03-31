@@ -8,7 +8,6 @@
   "sage_financial_statement_report_tab",
   "sage_financial_statement_report_section",
   "enable_auto_creation_of_sfsr",
-  "auto_creation_time_of_sfsr",
   "folder_to_download_sfsr",
   "customer_id",
   "credit_memo",
@@ -21,7 +20,14 @@
   "section_break_vcxv",
   "accounts",
   "tab_break_bwzi",
-  "enable"
+  "vendor_id",
+  "credit_memo_gl",
+  "column_break_yjnx",
+  "accounts_payable_account",
+  "number_of_distributions",
+  "description_prefix",
+  "section_break_ukdl",
+  "glr_accounts"
  ],
  "fields": [
   {
@@ -56,7 +62,7 @@
   {
    "fieldname": "sage_financial_statement_report_tab",
    "fieldtype": "Tab Break",
-   "label": "Sage Financial Statement Report"
+   "label": "Sage Trial Balance Report"
   },
   {
    "fieldname": "tab_break_bwzi",
@@ -82,12 +88,6 @@
    "options": "Sage FSR Accounts"
   },
   {
-   "default": "0",
-   "fieldname": "enable",
-   "fieldtype": "Check",
-   "label": "Enable"
-  },
-  {
    "fieldname": "invoice_prefix",
    "fieldtype": "Data",
    "label": "Invoice Prefix"
@@ -99,23 +99,56 @@
    "label": "Enable Auto Creation of SFSR"
   },
   {
-   "fieldname": "auto_creation_time_of_sfsr",
-   "fieldtype": "Time",
-   "label": "Auto Creation Time Of SFSR",
-   "mandatory_depends_on": "enable_auto_creation_of_sfsr"
-  },
-  {
    "description": "Ex: '~/Desktop/Sage Reports'",
    "fieldname": "folder_to_download_sfsr",
    "fieldtype": "Data",
    "label": "Folder to Download SFSR"
+  },
+  {
+   "fieldname": "vendor_id",
+   "fieldtype": "Data",
+   "label": "Vendor ID"
+  },
+  {
+   "fieldname": "credit_memo_gl",
+   "fieldtype": "Data",
+   "label": "Credit Memo GL"
+  },
+  {
+   "fieldname": "column_break_yjnx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "accounts_payable_account",
+   "fieldtype": "Data",
+   "label": "Accounts Payable Account"
+  },
+  {
+   "fieldname": "number_of_distributions",
+   "fieldtype": "Data",
+   "label": "Number of Distributions"
+  },
+  {
+   "fieldname": "description_prefix",
+   "fieldtype": "Data",
+   "label": "Description Prefix"
+  },
+  {
+   "fieldname": "section_break_ukdl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "glr_accounts",
+   "fieldtype": "Table",
+   "label": "GLR Accounts",
+   "options": "Sage GLR Accounts"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-26 16:16:47.843256",
+ "modified": "2026-03-31 12:15:08.575261",
  "modified_by": "Administrator",
  "module": "Mesk Sageerp",
  "name": "Sage Report Setting",

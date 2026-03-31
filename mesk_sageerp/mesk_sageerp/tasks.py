@@ -59,7 +59,7 @@ def daily_export_sage_financial_statement():
 		xlsx_data = [header] + rows
 		xlsx_file = make_xlsx(xlsx_data, "Sage Financial Statement")
 
-		filename = f"{period_start_end_date} {frappe.utils.nowtime()}_SFSR.xlsx"
+		filename = f"{period_start_end_date}_SFSR.xlsx"
 		filepath = os.path.join(desktop_path, filename)
 
 		with open(filepath, "wb") as f:
