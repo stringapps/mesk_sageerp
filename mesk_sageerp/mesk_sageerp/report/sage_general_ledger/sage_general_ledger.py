@@ -51,7 +51,9 @@ def execute(filters=None):
 	res = get_result(filters, account_details)
 	
 	srs = frappe.get_single("Sage Report Setting")
+	
 	acc = [ d.account for d in srs.glr_accounts ]
+	tax_accounts = { d.account for d in srs.glr_accounts if d.get("is_tax") }
 
 	print("acc", acc)
 	filtered_accounts = [
@@ -59,7 +61,7 @@ def execute(filters=None):
    			"vendor_id": frappe.get_value("Supplier", item.get("against"), "custom_vendor_id"),
 			"credit_memo": srs.get("credit_memo_gl"),
 			"accounts_payable_account": srs.get("accounts_payable_account"),
-			"description": srs.get("description_prefix"),
+			"description": srs.get("description_prefix") + " " + getdate(item.get("posting_date")).strftime("%b %Y") + ("-Vat 10%" if item.get("account") in tax_accounts else ""),
 			} for item in res
 					if item.get("account") in acc
 	]

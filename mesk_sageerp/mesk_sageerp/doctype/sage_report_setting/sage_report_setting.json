@@ -20,11 +20,9 @@
   "section_break_vcxv",
   "accounts",
   "tab_break_bwzi",
-  "vendor_id",
   "credit_memo_gl",
   "column_break_yjnx",
   "accounts_payable_account",
-  "number_of_distributions",
   "description_prefix",
   "section_break_ukdl",
   "glr_accounts"
@@ -105,11 +103,6 @@
    "label": "Folder to Download SFSR"
   },
   {
-   "fieldname": "vendor_id",
-   "fieldtype": "Data",
-   "label": "Vendor ID"
-  },
-  {
    "fieldname": "credit_memo_gl",
    "fieldtype": "Data",
    "label": "Credit Memo GL"
@@ -122,11 +115,6 @@
    "fieldname": "accounts_payable_account",
    "fieldtype": "Data",
    "label": "Accounts Payable Account"
-  },
-  {
-   "fieldname": "number_of_distributions",
-   "fieldtype": "Data",
-   "label": "Number of Distributions"
   },
   {
    "fieldname": "description_prefix",
@@ -148,7 +136,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-31 12:15:08.575261",
+ "modified": "2026-04-01 11:05:18.007069",
  "modified_by": "Administrator",
  "module": "Mesk Sageerp",
  "name": "Sage Report Setting",
