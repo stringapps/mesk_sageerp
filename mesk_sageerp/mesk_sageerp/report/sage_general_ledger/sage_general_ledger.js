@@ -249,8 +249,22 @@ frappe.query_reports["Sage General Ledger"] = {
 			hidden: 1,
 		},
 	],
-	collapsible_filters: true,
-	seperate_check_filters: true,
+	onload: function () {
+		frappe.query_report.page.add_inner_button(__("Export to Excel"), function () {
+			let filters = frappe.query_report.get_filter_values();
+			frappe.call({
+				method: "mesk_sageerp.mesk_sageerp.report.sage_general_ledger.sage_general_ledger.export_to_excel",
+				args: { filters: filters },
+				freeze: true,
+				freeze_message: __("Exporting to Excel..."),
+				callback: function (r) {
+					if (r.message) {
+						frappe.msgprint(__("Excel file saved to: {0}", [r.message]));
+					}
+				},
+			});
+		}).addClass("btn-primary");
+	}
 };
 
 erpnext.utils.add_dimensions("Sage General Ledger", 15);

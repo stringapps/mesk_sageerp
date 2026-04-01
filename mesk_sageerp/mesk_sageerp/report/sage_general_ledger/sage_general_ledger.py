@@ -60,6 +60,7 @@ def execute(filters=None):
 		{	**item, 
    			"vendor_id": frappe.get_value("Supplier", item.get("against"), "custom_vendor_id"),
 			"credit_memo": srs.get("credit_memo_gl"),
+			"account": frappe.get_value("Account", item.get("account"), "account_number"),
 			"accounts_payable_account": srs.get("accounts_payable_account"),
 			"description": srs.get("description_prefix") + " " + getdate(item.get("posting_date")).strftime("%b %Y") + ("-Vat 10%" if item.get("account") in tax_accounts else ""),
 			} for item in res
@@ -736,7 +737,7 @@ def get_columns(filters):
 			"label": _("Description"),
 			"fieldname": "description",
 			"fieldtype": "Data",
-			"width": 300,
+			"width": 350,
 		},
 		{
 			"label": _("G/L Account"),
@@ -874,3 +875,38 @@ def get_columns(filters):
 	# 	columns.extend([{"label": _("Remarks"), "fieldname": "remarks", "width": 400}])
 
 	return columns
+
+
+@frappe.whitelist()
+def export_to_excel(filters):
+	import json
+	import os
+
+	from frappe.utils.xlsxutils import make_xlsx
+	
+	srs = frappe.get_single("Sage Report Setting")
+	
+	if isinstance(filters, str):
+		filters = json.loads(filters)
+	filters = frappe._dict(filters)
+	columns, data, *_ = execute(filters)
+
+	header = [col.get("label") for col in columns]
+	rows = []
+	for row in data:
+		rows.append([row.get(col.get("fieldname"), "") for col in columns])
+
+	xlsx_data = [header] + rows
+	xlsx_file = make_xlsx(xlsx_data, "Sage General Ledger")
+
+	desktop_path = os.path.expanduser(srs.folder_to_download_sfsr)
+	os.makedirs(desktop_path, exist_ok=True)
+
+	report_type = filters.get("report", "Report").replace(" ", "_")
+	filename = f"{filters.from_date}_SGLR.xlsx"
+	filepath = os.path.join(desktop_path, filename)
+
+	with open(filepath, "wb") as f:
+		f.write(xlsx_file.getvalue())
+
+	return filepath
