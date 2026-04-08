@@ -143,16 +143,16 @@ frappe.query_reports["Sage Trial Balance"] = {
 		},
 	],
 	onload: function () {
-		frappe.query_report.page.add_inner_button(__("Export to Excel"), function () {
+		frappe.query_report.page.add_inner_button(__("Export to CSV"), function () {
 			let filters = frappe.query_report.get_filter_values();
 			frappe.call({
-				method: "mesk_sageerp.mesk_sageerp.report.sage_trial_balance.sage_trial_balance.export_to_excel",
+				method: "mesk_sageerp.mesk_sageerp.report.sage_trial_balance.sage_trial_balance.export_to_csv",
 				args: { filters: filters },
 				freeze: true,
-				freeze_message: __("Exporting to Excel..."),
+				freeze_message: __("Exporting to CSV..."),
 				callback: function (r) {
 					if (r.message) {
-						frappe.msgprint(__("Excel file saved to: {0}", [r.message]));
+						frappe.msgprint(__("CSV file saved to: {0}", [r.message]));
 					}
 				},
 			});

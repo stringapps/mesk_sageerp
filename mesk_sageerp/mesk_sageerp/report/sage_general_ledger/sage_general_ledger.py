@@ -55,7 +55,6 @@ def execute(filters=None):
 	acc = [ d.account for d in srs.glr_accounts ]
 	tax_accounts = { d.account for d in srs.glr_accounts if d.get("is_tax") }
 
-	print("acc", acc)
 	filtered_accounts = [
 		{	**item, 
    			"vendor_id": frappe.get_value("Supplier", item.get("against"), "custom_vendor_id"),
@@ -878,14 +877,14 @@ def get_columns(filters):
 
 
 @frappe.whitelist()
-def export_to_excel(filters):
+def export_to_csv(filters):
+	import csv
+	import io
 	import json
 	import os
 
-	from frappe.utils.xlsxutils import make_xlsx
-	
 	srs = frappe.get_single("Sage Report Setting")
-	
+
 	if isinstance(filters, str):
 		filters = json.loads(filters)
 	filters = frappe._dict(filters)
@@ -896,17 +895,18 @@ def export_to_excel(filters):
 	for row in data:
 		rows.append([row.get(col.get("fieldname"), "") for col in columns])
 
-	xlsx_data = [header] + rows
-	xlsx_file = make_xlsx(xlsx_data, "Sage General Ledger")
+	output = io.StringIO()
+	writer = csv.writer(output)
+	writer.writerow(header)
+	writer.writerows(rows)
 
 	desktop_path = os.path.expanduser(srs.folder_to_download_sfsr)
 	os.makedirs(desktop_path, exist_ok=True)
 
-	report_type = filters.get("report", "Report").replace(" ", "_")
-	filename = f"{filters.from_date}_SGLR.xlsx"
+	filename = f"{filters.from_date}_SGLR.csv"
 	filepath = os.path.join(desktop_path, filename)
 
-	with open(filepath, "wb") as f:
-		f.write(xlsx_file.getvalue())
+	with open(filepath, "w", newline="") as f:
+		f.write(output.getvalue())
 
 	return filepath

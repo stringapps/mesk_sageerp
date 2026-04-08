@@ -1,8 +1,9 @@
+import csv
+import io
 import os
 
 import frappe
 from frappe.utils import add_days , getdate, today
-from frappe.utils.xlsxutils import make_xlsx
 from erpnext.accounts.utils import get_fiscal_year
 
 
@@ -77,7 +78,7 @@ from erpnext.accounts.utils import get_fiscal_year
 
 
 def daily_export_sage_trial_balance():
-	"""Export Sage Trial Balance report to Excel on the Desktop daily at 10 AM."""
+	"""Export Sage Trial Balance report to CSV on the Desktop daily at 10 AM."""
 	from mesk_sageerp.mesk_sageerp.report.sage_trial_balance.sage_trial_balance import (
 		execute,
 	)
@@ -116,14 +117,16 @@ def daily_export_sage_trial_balance():
 		for row in data:
 			rows.append([row.get(col.get("fieldname"), "") for col in columns])
 
-		xlsx_data = [header] + rows
-		xlsx_file = make_xlsx(xlsx_data, "Sage Trial Balance")
+		output = io.StringIO()
+		writer = csv.writer(output)
+		writer.writerow(header)
+		writer.writerows(rows)
 
-		filename = f"{date}_STBR.xlsx"
+		filename = f"{date}_STBR.csv"
 		filepath = os.path.join(desktop_path, filename)
 
-		with open(filepath, "wb") as f:
-			f.write(xlsx_file.getvalue())
+		with open(filepath, "w", newline="") as f:
+			f.write(output.getvalue())
 
 		frappe.logger().info(f"Sage Trial Balance exported: {filepath}")
 

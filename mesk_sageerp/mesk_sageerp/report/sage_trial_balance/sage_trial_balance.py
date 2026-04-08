@@ -50,20 +50,22 @@ def execute(filters=None):
 			} for item in data
 					if item.get("account") in acc
 	]
-	data = [
-				{
-					**item,
-					"number_of_distributions": len(filtered_accounts),
-					"net_amount": (
-						float(item.get("debit", 0) or 0)
-						if float(item.get("debit", 0) or 0) > 0 and float(item.get("credit", 0) or 0) == 0
-						else -float(item.get("credit", 0) or 0)
-						if float(item.get("credit", 0) or 0) > 0 and float(item.get("debit", 0) or 0) == 0
-						else 0
-					)
-				}
-				for item in filtered_accounts
-			]
+	data = []
+	for item in filtered_accounts:
+		debit = float(item.get("debit", 0) or 0)
+		credit = float(item.get("credit", 0) or 0)
+		if debit > 0 and credit == 0:
+			net_amount = debit
+		elif credit > 0 and debit == 0:
+			net_amount = -credit
+		else:
+			net_amount = 0
+		if net_amount != 0:
+			data.append({**item, "net_amount": net_amount})
+
+	for row in data:
+		row["number_of_distributions"] = len(data)
+
 	return columns, data
 
 
@@ -595,16 +597,16 @@ def hide_group_accounts(data):
 	return non_group_accounts_data
 
 @frappe.whitelist()
-def export_to_excel(filters):
+def export_to_csv(filters):
+	import csv
+	import io
 	import json
 	import os
 
-	from frappe.utils.xlsxutils import make_xlsx
-	
 	srs = frappe.get_single("Sage Report Setting")
 	if not srs.enable_auto_creation_of_sfsr:
 		return
-	
+
 	if isinstance(filters, str):
 		filters = json.loads(filters)
 	filters = frappe._dict(filters)
@@ -615,17 +617,18 @@ def export_to_excel(filters):
 	for row in data:
 		rows.append([row.get(col.get("fieldname"), "") for col in columns])
 
-	xlsx_data = [header] + rows
-	xlsx_file = make_xlsx(xlsx_data, "Sage Trial Balance")
+	output = io.StringIO()
+	writer = csv.writer(output)
+	writer.writerow(header)
+	writer.writerows(rows)
 
 	desktop_path = os.path.expanduser(srs.folder_to_download_sfsr)
 	os.makedirs(desktop_path, exist_ok=True)
 
-	report_type = filters.get("report", "Report").replace(" ", "_")
-	filename = f"{filters.from_date}_STBR.xlsx"
+	filename = f"{filters.from_date}_STBR.csv"
 	filepath = os.path.join(desktop_path, filename)
 
-	with open(filepath, "wb") as f:
-		f.write(xlsx_file.getvalue())
+	with open(filepath, "w", newline="") as f:
+		f.write(output.getvalue())
 
 	return filepath
