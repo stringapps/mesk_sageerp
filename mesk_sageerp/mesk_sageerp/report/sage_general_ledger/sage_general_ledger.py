@@ -61,6 +61,7 @@ def execute(filters=None):
 			"credit_memo": srs.get("credit_memo_gl"),
 			"account": frappe.get_value("Account", item.get("account"), "account_number"),
 			"accounts_payable_account": srs.get("accounts_payable_account"),
+			"bill_no": frappe.get_value("Purchase Invoice", item.get("voucher_no"), "bill_no") or "",
 			"description": srs.get("description_prefix") + " " + getdate(item.get("posting_date")).strftime("%b %Y") + ("-Vat 10%" if item.get("account") in tax_accounts else ""),
 			} for item in res
 					if item.get("account") in acc
@@ -704,7 +705,7 @@ def get_columns(filters):
 		},
 		{
 			"label": _("Invoice/CM #"),
-			"fieldname": "voucher_no",
+			"fieldname": "bill_no",
 			"fieldtype": "Data",
 			"width": 250,
 		},
